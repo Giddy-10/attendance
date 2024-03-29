@@ -198,6 +198,31 @@ def add_student(students_list):
     students_list.append(new_student)
     return students_list
 
+def edit_student_attendance(students_list):
+    student = find_student(students_list)
+    if student is None:
+        print("No student found.")
+        time.sleep(.5)
+        return
+    print("What date do you want to edit attendance for?")
+    date_to_edit = get_date()
+    while True:
+        for day in student["attendance"]:
+            if day["date"] == date_to_edit:
+                print(f"The attendance for {student['name']} on {date_to_edit} is {day['status']}.")
+                new_status = input("Enter the new status (p for present, a for absent): ").strip().lower()
+                if new_status in ACCEPTED_ATTENDANCE_STATUS:
+                    day["status"] = new_status(status_name)
+                    print("Attendance updated successfully.")
+                    time.sleep(.5)
+                    return
+                else:
+                    print("Invalid status. Please enter 'p' for present or 'a' for absent.")
+        print(f"No attendance record found for {student['name']} on {date_to_edit}.")
+        time.sleep(.5)
+        break
+    return students_list
+
 def view_student_attendance(students_list):
     student = find_student(students_list)
     if student == None:
@@ -222,6 +247,13 @@ def remove_student(students_list):
 
 
 
+def write_data_file(path_to_file, students_list):
+    with open(path_to_file, "w") as outfile:
+        students_string = json.dumps(students_list, indent=4)
+        outfile.write(students_string)
+
+
+
 
 while True:
     print("\nWhat would you like to do?")
@@ -239,14 +271,17 @@ while True:
         continue
     elif action_id == 1:
         students = take_attendance(students)
-        with open(full_students_path, "w") as outfile:
-            students_string = json.dumps(students, indent=4)
-            outfile.write(students_string)
+        write_data_file(full_students_path, students)
     elif action_id == 2:
         students = add_student(students)
+        write_data_file(full_students_path, students)
+    elif action_id == 3:
+        students = edit_student_attendance(students)
+        write_data_file(full_students_path, students)
     elif action_id == 4:
         view_student_attendance(students)
     elif action_id == 5:
         students = remove_student(students)
+        write_data_file(full_students_path, students)
     elif action_id == 6:
         break
