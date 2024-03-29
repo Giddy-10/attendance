@@ -204,6 +204,21 @@ def view_student_attendance(students_list):
         return
     print_attendance(student)
 
+def remove_student(students_list):
+    student = find_student(students_list)
+    if student == None:
+        print("No student chosen.")
+        time.sleep(.5)
+        return students_list
+    print_single_student_name(student)
+    confirm_removal = input(f"Are you sure you want to remove {student['name']}? (yes/no): ").strip()
+    if confirm_removal.lower() in POSITIVE_CONFIRMATIONS:
+        students_list.remove(student)
+        print(f"{student['name']} has been removed from the list.")
+    else:
+        print(f"{student['name']} was not removed.")
+    return students_list
+
 
 
 
@@ -231,5 +246,7 @@ while True:
         students = add_student(students)
     elif action_id == 4:
         view_student_attendance(students)
+    elif action_id == 5:
+        students = remove_student(students)
     elif action_id == 6:
         break
