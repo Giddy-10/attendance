@@ -14,7 +14,7 @@ MIN_CLASSES_TO_MISS = (24 * (100-75)) // 100
 POSITIVE_CONFIRMATIONS = ['yes', 'y']
 ACCEPTED_ATTENDANCE_STATUS = ['p', 'a']
 ACTIONS = [
-    "Take today's attendance",
+    "Take attendance",
     "Add a student",
     "Edit a student's attendance",
     "View a student's attendance",
@@ -26,6 +26,10 @@ ACTIONS = [
 with open(full_students_path, "r") as infile:
     students = json.load(infile)
 
+
+def sort_students(students_list):
+    students_list.sort(key=lambda x: x['id'])
+    return students_list
 
 def sort_attendance(student):
     attendance_list = student["attendance"]
@@ -187,6 +191,11 @@ def add_student(students_list):
     while not id_is_numeric:
         new_id_string = input("Id: ")
         id_is_numeric = new_id_string.isnumeric()
+        if id_is_numeric == False:
+            continue
+        for student in students_list:
+            if str(student['id']) == new_id_string:
+                id_is_numeric = False
     name_is_numeric = True
     while name_is_numeric:
         new_name_string = input("Name: ")
@@ -196,6 +205,7 @@ def add_student(students_list):
     new_student["fail"] = False
     new_student["attendance"] = []
     students_list.append(new_student)
+    students_list = sort_students(students_list)
     return students_list
 
 def edit_student_attendance(students_list):
@@ -236,7 +246,8 @@ def remove_student(students_list):
         time.sleep(.5)
         return students_list
     print_single_student_name(student)
-    confirm_removal = input(f"Are you sure you want to remove {student['name']}? (yes/no): ").strip()
+    print("y for yes, n for no.")
+    confirm_removal = input(f"Are you sure you want to remove {student['name']}? [y/n]: ").strip()
     if confirm_removal.lower() in POSITIVE_CONFIRMATIONS:
         students_list.remove(student)
         print(f"{student['name']} has been removed from the list.")
