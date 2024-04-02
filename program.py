@@ -230,8 +230,13 @@ def edit_student_attendance(students_list):
                         print("Invalid status. Please enter 'p' for present or 'a' for absent.\n")
                         continue
                     day["status"] = status_name(new_status)
-                    print("\nAttendance updated successfully.")
-                    time.sleep(.5)
+                    print("\nAttendance updated successfully.\n")
+                    classes_remaining = classes_until_fail(student)
+                    if classes_remaining < 0:
+                        print("Student failed.")
+                    else:
+                        print(f"Classes left before fail: {str(classes_remaining)}")
+                    time.sleep(.7)
                     for single_student in students_list:
                         if single_student['id'] == student['id']:
                             single_student = student.copy()
