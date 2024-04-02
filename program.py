@@ -234,8 +234,10 @@ def edit_student_attendance(students_list):
                     classes_remaining = classes_until_fail(student)
                     if classes_remaining < 0:
                         print("Student failed.")
+                        student["fail"] = True
                     else:
                         print(f"Classes left before fail: {str(classes_remaining)}")
+                        student["fail"] = False
                     time.sleep(.7)
                     for single_student in students_list:
                         if single_student['id'] == student['id']:
