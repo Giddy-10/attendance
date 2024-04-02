@@ -237,6 +237,7 @@ def view_student_attendance(students_list):
     student = find_student(students_list)
     if student == None:
         return
+    print_single_student_name(student)
     print_attendance(student)
 
 def remove_student(students_list):
