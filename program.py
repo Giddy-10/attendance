@@ -12,7 +12,7 @@ NUMBER_OF_CLASSES = 24
 MIN_PERCENTAGE_TO_PASS = 75
 MIN_CLASSES_TO_MISS = (24 * (100-75)) // 100
 POSITIVE_CONFIRMATIONS = ['yes', 'y']
-ACCEPTED_ATTENDANCE_STATUS = ['p', 'a']
+ACCEPTED_ATTENDANCE_STATUS = ['p', 'present', 'a', 'absent']
 ACTIONS = [
     "Take attendance",
     "Add a student",
@@ -110,10 +110,10 @@ def print_actions(actions_list):
 
 def find_student(students_list):
     while True:
-        print("Enter quit to quit.")
-        identifior = input("Write the student's name or id: ").strip()
+        print("Enter q to quit.")
+        identifior = input("Write the student's name or id: ").strip().title()
         print()
-        if identifior.lower() == "quit":
+        if identifior.lower() == "q" or identifior.lower() == "quit":
             break
         type_of_identifior = name_or_id(identifior)
         if type_of_identifior == 'id':
@@ -138,10 +138,10 @@ def get_date():
 
 def status_name(status):
     if status == 'p':
-        student_status = "present"
-    else:
-        student_status = "absent"
-    return student_status
+        status = "present"
+    elif status == 'a':
+        status = "absent"
+    return status
 
 
 
@@ -213,25 +213,32 @@ def edit_student_attendance(students_list):
     if student is None:
         print("No student found.")
         time.sleep(.5)
-        return
-    print("What date do you want to edit attendance for?")
-    date_to_edit = get_date()
+        return students_list
     while True:
+        print_attendance(student)
+        print("What date do you want to edit attendance for?")
+        date_to_edit = get_date()
         for day in student["attendance"]:
             if day["date"] == date_to_edit:
-                print(f"The attendance for {student['name']} on {date_to_edit} is {day['status']}.")
-                new_status = input("Enter the new status (p for present, a for absent): ").strip().lower()
-                if new_status in ACCEPTED_ATTENDANCE_STATUS:
-                    day["status"] = new_status(status_name)
-                    print("Attendance updated successfully.")
+                print(f"\nThe attendance for {student['name']} on {date_to_edit} is {day['status']}.")
+                while True:
+                    print('\nEnter q to quit.')
+                    new_status = input("Enter the new status (p for present, a for absent): ").strip().lower()
+                    if new_status == 'q' or new_status == 'quit':
+                        return students_list
+                    elif new_status not in ACCEPTED_ATTENDANCE_STATUS:
+                        print("Invalid status. Please enter 'p' for present or 'a' for absent.\n")
+                        continue
+                    day["status"] = status_name(new_status)
+                    print("\nAttendance updated successfully.")
                     time.sleep(.5)
-                    return
-                else:
-                    print("Invalid status. Please enter 'p' for present or 'a' for absent.")
+                    for single_student in students_list:
+                        if single_student['id'] == student['id']:
+                            single_student = student.copy()
+                    return students_list
         print(f"No attendance record found for {student['name']} on {date_to_edit}.")
         time.sleep(.5)
-        break
-    return students_list
+        continue
 
 def view_student_attendance(students_list):
     student = find_student(students_list)
